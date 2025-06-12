@@ -1,0 +1,658 @@
+  <!DOCTYPE html>
+  <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ela & Ele - Nosso Amor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap" rel="stylesheet" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Open Sans', sans-serif;
+        background: linear-gradient(to bottom, #ffdde1, #ee9ca7);
+        overflow-x: hidden;
+        color: #3b0a36;
+        position: relative;
+        min-height: 100vh;
+        padding-bottom: 100px;
+      }
+      header {
+        height: 100vh;
+        background: url('https://i.imgur.com/HEaYV0n.png') center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        color: white;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+      header h1 {
+        font-family: 'Great Vibes', cursive;
+        font-size: 4em;
+        margin-bottom: 0.5em;
+        animation: fadeIn 2s ease-in-out;
+      }
+      header p {
+        font-size: 1.5em;
+        animation: fadeIn 3s ease-in-out;
+      }
+      section {
+        padding: 60px 20px;
+        max-width: 1000px;
+        margin: auto;
+      }
+      section h2 {
+        font-family: 'Great Vibes', cursive;
+        font-size: 3em;
+        text-align: center;
+        margin-bottom: 40px;
+        color: #880e4f;
+      }
+      .poema {
+        font-size: 1.3em;
+        line-height: 1.6em;
+        white-space: pre-wrap;
+        text-align: center;
+        margin-bottom: 60px;
+      }
+      .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .timeline div {
+        background: white;
+        padding: 15px;
+        border-left: 5px solid #c2185b;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      }
+      .carta {
+        text-align: center;
+        margin-top: 60px;
+      }
+      .carta button {
+        background: #c2185b;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      .carta button:hover {
+        background: #880e4f;
+      }
+      .carta p {
+        margin-top: 20px;
+        font-size: 1.2em;
+        display: none;
+        animation: fadeIn 2s forwards;
+      }
+      #memory-game {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        justify-content: center;
+        margin-top: 40px;
+      }
+      .card {
+        background: white;
+        color: #c2185b;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 1.1em;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+        user-select: none;
+        user-drag: none;
+        -webkit-user-select:none;
+        -webkit-user-drag:none;
+      }
+      .card.flipped {
+        background: #f8bbd0;
+        cursor: default;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .heart {
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        background-color: pink;
+        transform: rotate(45deg);
+        animation: float 10s linear infinite;
+        pointer-events: none;
+        opacity: 0.8;
+        z-index: 999;
+      }
+      .heart::before,
+      .heart::after {
+        content: '';
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        background-color: pink;
+        border-radius: 50%;
+      }
+      .heart::before {
+        top: -7.5px;
+        left: 0;
+      }
+      .heart::after {
+        left: -7.5px;
+        top: 0;
+      }
+      @keyframes float {
+        0% {
+          bottom: -10px;
+          opacity: 0;
+          transform: translateX(0) rotate(45deg);
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          bottom: 110%;
+          transform: translateX(100px) rotate(45deg);
+          opacity: 0;
+        }
+      }
+      #musicControl {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: #c71585;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: background-color 0.3s;
+      }
+      #musicControl:hover {
+        background: #880e4f;
+      }
+
+      /* Contagem regressiva */
+      #countdown {
+        font-size: 2em;
+        text-align: center;
+        margin-top: 20px;
+        color: #c2185b;
+      }
+
+      /* Esconder conteúdo inicialmente */
+      #content {
+        display: none;
+      }
+
+      /* Quiz escondido inicialmente */
+      #quiz-love {
+        max-width: 500px;
+        margin: 40px auto;
+        background: white;
+        padding: 20px 30px;
+        border-radius: 15px;
+        box-shadow: 2px 2px 12px rgba(0,0,0,0.15);
+        display: none;
+      }
+      #quiz-love h2 {
+        font-family: 'Great Vibes', cursive;
+        color: #c2185b;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .question {
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #880e4f;
+      }
+      .options button {
+        margin: 5px 10px 15px 0;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 8px;
+        background-color: #f8bbd0;
+        color: #3b0a36;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s;
+      }
+      .options button:hover {
+        background-color: #c2185b;
+        color: white;
+      }
+      #quiz-result {
+        font-weight: bold;
+        color: #c2185b;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      /* Adivinhar palavra */
+      #guess-word-section {
+        max-width: 600px;
+        margin: 60px auto;
+        background: white;
+        padding: 30px 40px;
+        border-radius: 15px;
+        box-shadow: 2px 2px 12px rgba(0,0,0,0.15);
+        display: none;
+        text-align: center;
+        color: #880e4f;
+      }
+      #scrambled-word {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 25px;
+        color: #c2185b;
+        letter-spacing: 3px;
+      }
+      #guess-input {
+        padding: 10px;
+        font-size: 1.2em;
+        width: 80%;
+        border: 2px solid #c2185b;
+        border-radius: 10px;
+        outline: none;
+        margin-bottom: 20px;
+        text-transform: lowercase;
+      }
+      #guess-button {
+        padding: 10px 25px;
+        font-size: 1.2em;
+        background-color: #c2185b;
+        border: none;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      #guess-button:hover {
+        background-color: #880e4f;
+      }
+      #guess-message {
+        margin-top: 15px;
+        font-weight: bold;
+        min-height: 24px;
+      }
+      #final-text {
+        margin-top: 40px;
+        font-size: 1.5em;
+        font-family: 'Great Vibes', cursive;
+        color: #c2185b;
+        display: none;
+      }
+
+      @media(max-width:600px) {
+        header h1 {
+          font-size: 2.5em;
+        }
+        header p {
+          font-size: 1.1em;
+        }
+        section h2 {
+          font-size: 2em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="countdown"></div>
+
+    <div id="content">
+      <button id="musicControl">🎵 Tocar Música</button>
+      <iframe src="https://open.spotify.com/embed/track/1tqZOqyqwhuOgOlgVP42LG?utm_source=generator" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+
+      <header>
+        <h1>Kevin P & Letícia C</h1>
+        <p>Nosso amor é a mais linda história</p>
+      </header>
+
+      <section class="poema-section">
+        <h2>Poema para Letícia</h2>
+        <div class="poema">
+          Meu coração bate forte, minha menina amada,<br>
+          Desde o primeiro instante, você me encantou.<br>
+          Cada sorriso seu ilumina minha jornada,<br>
+          Com você, o amor verdadeiro brotou.<br><br>
+
+          Nosso encontro foi um sonho despertado,<br>
+          Em mundos virtuais, nossas almas se acharam.<br>
+          Agora juntos, nada será errado,<br>
+          Porque sei que pra sempre nos amaremos e cuidaremos.<br><br>
+
+          Letícia, meu sol, minha eterna paixão,<br>
+          Em cada verso escrevo nossa canção.<br>
+          Que este amor cresça e nunca tenha fim,<br>
+          Pois em você encontrei meu melhor jardim.
+        </div>
+      </section>
+
+      <section class="timeline-section">
+        <h2>Nossa História</h2>
+        <div class="timeline">
+          <div><strong>Abril 2023:</strong> Nos conhecemos no Avakin Life, uma conexão inesperada.</div>
+          <div><strong>26 de Maio 2023:</strong> Começamos a namorar, uma nova etapa de amor.</div>
+          <div><strong>Junho 2023:</strong> Muitas conversas, risadas e momentos inesquecíveis.</div>
+          <div><strong>Hoje:</strong> Construindo juntos nosso futuro e sonhos.</div>
+        </div>
+      </section>
+
+      <section class="carta">
+        <button id="btn-carta">Abrir minha carta para você</button>
+        <p id="carta-texto">Letícia, você é a luz que ilumina meus dias e a paz que acalma meu coração. Eu amo você para sempre.</p>
+      </section>
+
+      <section class="memory-game-section">
+        <h2>Jogo da Memória do Nosso Amor</h2>
+        <div id="memory-game"></div>
+      </section>
+
+      <section id="quiz-love">
+        <h2>Quiz do Amor</h2>
+        <div id="quiz-questions"></div>
+        <div id="quiz-result"></div>
+      </section>
+
+      <section id="guess-word-section">
+        <h2>Jogo de Adivinhar a Palavra</h2>
+        <div id="scrambled-word"></div>
+        <input type="text" id="guess-input" placeholder="Digite a palavra aqui" autocomplete="off" />
+        <br />
+        <button id="guess-button">Chutar</button>
+        <div id="guess-message"></div>
+        <div id="final-text" style="display: none;">
+          Hoje, ao completarmos todos os desafios, meu coração transborda de alegria. Cada jogo que jogamos, cada risada que compartilhamos, me faz perceber o quão especial você é para mim. 
+          Nossa história é como um conto de fadas, onde cada momento é uma nova página repleta de amor e felicidade. 
+          Letícia, você é a razão do meu sorriso e a luz que ilumina meus dias. 
+          Juntos, somos invencíveis, e eu mal posso esperar para escrever os próximos capítulos da nossa linda história. 
+          Eu te amo mais do que palavras podem expressar! 💖
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // Contagem regressiva
+      const countdownElement = document.getElementById('countdown');
+      const targetDate = new Date('2025-06-12T12:00:00').getTime();
+
+      const countdownInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          countdownElement.innerHTML = "A contagem regressiva terminou!";
+          document.getElementById('content').style.display = 'block'; // Exibe o conteúdo após a contagem
+        }
+      }, 1000);
+
+      // Música
+      const musicControl = document.getElementById('musicControl');
+      let isPlaying = false;
+      musicControl.addEventListener('click', () => {
+        const iframe = document.querySelector('iframe');
+        if (isPlaying) {
+          iframe.contentWindow.postMessage('{"message":"pause"}', '*');
+          musicControl.textContent = '🎵 Tocar Música';
+        } else {
+          iframe.contentWindow.postMessage('{"message":"play"}', '*');
+          musicControl.textContent = '🔇 Parar Música';
+        }
+        isPlaying = !isPlaying;
+      });
+
+      // Carta surpresa
+      const btnCarta = document.getElementById('btn-carta');
+      const cartaTexto = document.getElementById('carta-texto');
+      btnCarta.addEventListener('click', () => {
+        if (cartaTexto.style.display === 'block') {
+          cartaTexto.style.display = 'none';
+          btnCarta.textContent = 'Abrir minha carta para você';
+        } else {
+          cartaTexto.style.display = 'block';
+          btnCarta.textContent = 'Fechar carta';
+        }
+      });
+
+      // Corações flutuantes
+      function createHeart() {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = Math.random() * window.innerWidth + 'px';
+        heart.style.animationDuration = 5 + Math.random() * 5 + 's';
+        heart.style.opacity = Math.random();
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 10000);
+      }
+      setInterval(createHeart, 500);
+
+      // --- Jogo da Memória ---
+      const memoryGame = document.getElementById('memory-game');
+      const cardsData = ['Amor','Respeito','Carinho','Reciprocidade','Afeto','Amizade','Confiança','Parceria'];
+      let cards = [...cardsData, ...cardsData]; // pares duplicados
+      cards.sort(() => Math.random() - 0.5);
+
+      let flippedCards = [];
+      let matchedCards = 0;
+      let lockBoard = false;
+
+      function criarCartas() {
+        memoryGame.innerHTML = '';
+        cards.forEach((emoji, i) => {
+          const card = document.createElement('div');
+          card.classList.add('card');
+          card.dataset.index = i;
+          card.dataset.emoji = emoji;
+          card.textContent = '';
+          card.addEventListener('click', virarCarta);
+          memoryGame.appendChild(card);
+        });
+      }
+      criarCartas();
+
+      function virarCarta() {
+        if(lockBoard) return;
+        if(this.classList.contains('flipped')) return;
+        this.textContent = this.dataset.emoji;
+        this.classList.add('flipped');
+        flippedCards.push(this);
+
+        if(flippedCards.length === 2) {
+          lockBoard = true;
+          setTimeout(() => checarPar(), 1000);
+        }
+      }
+
+      function checarPar() {
+        const [c1, c2] = flippedCards;
+        if(c1.dataset.emoji === c2.dataset.emoji) {
+          matchedCards += 2;
+          c1.style.cursor = 'default';
+          c2.style.cursor = 'default';
+        } else {
+          c1.classList.remove('flipped');
+          c1.textContent = '';
+          c2.classList.remove('flipped');
+          c2.textContent = '';
+        }
+        flippedCards = [];
+        lockBoard = false;
+
+        if(matchedCards === cards.length) {
+          setTimeout(() => {
+            alert('Parabéns! Você encontrou todos os pares do nosso amor 💖');
+            quizSection.style.display = 'block';
+            criarQuiz();
+          }, 500);
+        }
+      }
+
+      // --- Quiz do amor ---
+      const quizSection = document.getElementById('quiz-love');
+      const quizQuestionsDiv = document.getElementById('quiz-questions');
+      const quizResultDiv = document.getElementById('quiz-result');
+
+      const quizQuestions = [
+        {
+          question: "Quando foi que você me passou seu Instagram?",
+          options: ["27 de Abril de 2023", "30 de Abril de 2023", "25 de Abril de 2023", "29 de Abril de 2023"],
+          answer: 0
+        },
+        {
+          question: "Qual foi a data que começamos a namorar?",
+          options: ["15 de Maio", "1 de Junho", "26 de Maio", "30 de Abril"],
+          answer: 2
+        },
+        {
+          question: "Qual foi o lugar que usamos para nos aproximar mais?",
+          options: ["Instagram", "Sush", "Avakin Life", "Whatsapp"],
+          answer: 1
+        }
+      ];
+
+      function criarQuiz() {
+        quizQuestionsDiv.innerHTML = '';
+        quizResultDiv.textContent = '';
+        let score = 0;
+        let currentQuestion = 0;
+
+        function mostrarPergunta(qIndex) {
+          quizQuestionsDiv.innerHTML = '';
+          const q = quizQuestions[qIndex];
+
+          const questionDiv = document.createElement('div');
+          questionDiv.classList.add('question');
+          questionDiv.textContent = q.question;
+          quizQuestionsDiv.appendChild(questionDiv);
+
+          // Declare optionsDiv apenas uma vez
+          const optionsDiv = document.createElement('div');
+          optionsDiv.classList.add('options');
+
+          q.options.forEach((option, oidx) => {
+            const btn = document.createElement('button');
+            btn.textContent = option;
+            btn.addEventListener('click', () => {
+              if (oidx === q.answer) score++;
+              currentQuestion++;
+              if (currentQuestion < quizQuestions.length) {
+                mostrarPergunta(currentQuestion);
+              } else {
+                quizQuestionsDiv.innerHTML = '';
+                quizResultDiv.textContent = `Você acertou ${score} de ${quizQuestions.length} perguntas! 💖`;
+                document.getElementById('guess-word-section').style.display = 'block';
+              }
+            });
+            optionsDiv.appendChild(btn);
+          });
+
+          quizQuestionsDiv.appendChild(optionsDiv);
+        }
+
+        mostrarPergunta(currentQuestion);
+      }
+
+      // --- Jogo de adivinhar várias palavras ---
+      const guessSection = document.getElementById('guess-word-section');
+      const scrambledWordDiv = document.getElementById('scrambled-word');
+      const guessInput = document.getElementById('guess-input');
+      const guessButton = document.getElementById('guess-button');
+      const guessMessage = document.getElementById('guess-message');
+      const finalText = document.getElementById('final-text');
+
+      // Lista das palavras secretas (pode editar/colocar outras)
+      const secretWords = ["leticia", "amor", "carinho", "paixao", "vida"];
+      let currentIndex = 0;
+
+      function scrambleWord(word) {
+        const arr = word.split('');
+        for(let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr.join('');
+      }
+
+      function loadNextWord() {
+        if (currentIndex < secretWords.length) {
+          scrambledWordDiv.textContent = scrambleWord(secretWords[currentIndex]);
+          guessMessage.textContent = '';
+          guessInput.value = '';
+          guessInput.disabled = false;
+          guessButton.disabled = false;
+          guessInput.focus();
+        } else {
+          // Final do jogo
+          scrambledWordDiv.textContent = '';
+          guessInput.style.display = 'none';
+          guessButton.style.display = 'none';
+          guessMessage.textContent = '';
+          finalText.style.display = 'block';
+          finalText.innerHTML = `
+          Hoje, ao completarmos todos os desafios, meu coração transborda de alegria. Cada jogo que jogamos, cada risada que compartilhamos, me faz perceber o quão especial você é para mim. 
+          Nossa história é como um conto de fadas, onde cada momento é uma nova página repleta de amor e felicidade. 
+          Letícia, você é a razão do meu sorriso e a luz que ilumina meus dias. 
+          Juntos, somos invencíveis, e eu mal posso esperar para escrever os próximos capítulos da nossa linda história. 
+          Eu te amo mais do que palavras podem expressar! 💖
+          `;
+        }
+      }
+
+      // Inicializa com a primeira palavra embaralhada
+      loadNextWord();
+
+      guessButton.addEventListener('click', () => {
+        const guess = guessInput.value.trim().toLowerCase();
+        if (!guess) {
+          guessMessage.textContent = 'Digite uma palavra para chutar.';
+          return;
+        }
+        if (guess === secretWords[currentIndex]) {
+          guessMessage.textContent = 'Parabéns! Você acertou a palavra!';
+          currentIndex++;
+          setTimeout(loadNextWord, 1500);
+        } else {
+          guessMessage.textContent = 'Ops, não é essa palavra. Tente novamente!';
+        }
+      });
+
+      // Esconder quiz e jogo de adivinhar no início
+      quizSection.style.display = 'none';
+      guessSection.style.display = 'none';
+
+    </script>
+
+  </body>
+  </html>
